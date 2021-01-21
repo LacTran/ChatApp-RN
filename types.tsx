@@ -1,6 +1,12 @@
+// specifying "undefined" meaning the route doesnt have params.
+// A union type with undefined (e.g. SomeType | undefined) means that params are optional.
 export type RootStackParamList = {
   Root: undefined;
   NotFound: undefined;
+  ChatRoom: {
+    id: string;
+    name: string;
+  };
 };
 
 export type MainTabParamList = {
