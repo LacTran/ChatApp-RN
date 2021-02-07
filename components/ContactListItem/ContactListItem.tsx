@@ -26,6 +26,10 @@ export function ContactListItem({ user }: ContactListItemProps) {
     const onClick = async () => {
         //navigate to chat room with this user
         try {
+
+            // Check if you already have the chat room with the user
+
+            // if not
             // 1. Create a new Chat Room
 
             const newChatRoomData = await API.graphql(
