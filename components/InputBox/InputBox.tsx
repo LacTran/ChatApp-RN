@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextInput, View } from 'react-native';
 import styles from './style';
 
@@ -11,16 +11,48 @@ import {
 } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export function InputBox() {
+import { createMessage } from '../../src/graphql/mutations';
+import { API, Auth, graphqlOperation } from 'aws-amplify';
 
-    const [message, setMessage] = useState<string>('')
+export type InputBoxProps = {
+    chatRoomId: string
+}
+
+export function InputBox({ chatRoomId }: InputBoxProps) {
+
+    const [message, setMessage] = useState<string>('');
+    const [currentUserId, setCurrentUserId] = useState('');
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const userInfo = await Auth.currentAuthenticatedUser();
+            setCurrentUserId(userInfo.attributes.sub)
+        }
+        fetchUser()
+    })
 
     const onMicrophonePress = () => {
         console.warn('Microphone')
     }
 
-    const onSendPress = () => {
-        console.warn('sending:', message)
+    const onSendPress = async () => {
+        try {
+            const res = await API.graphql(
+                graphqlOperation(
+                    createMessage,
+                    {
+                        input: {
+                            content: message,
+                            userId: currentUserId,
+                            chatRoomId
+                        }
+                    }
+                )
+            )
+            console.log(res)
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const handleMainButton = () => {
@@ -30,6 +62,8 @@ export function InputBox() {
             onSendPress();
         }
     }
+
+
     return (
         <View style={styles.container}>
             <View style={styles.mainContainer}>

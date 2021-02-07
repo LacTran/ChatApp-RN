@@ -17,8 +17,7 @@ export function ChatListItem(
     // const { chatRoom } = props
 
     const [otherUser, setOtherUser] = useState(null)
-
-    console.log(chatRoom.chatRoomUsers)
+    
     const user = chatRoom.chatRoomUsers.items[1].user;
 
     useEffect(() => {
@@ -45,7 +44,7 @@ export function ChatListItem(
         )
     }
 
-    if(!otherUser){
+    if (!otherUser) {
         return null;
     }
 
