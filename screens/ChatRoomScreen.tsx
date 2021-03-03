@@ -17,7 +17,6 @@ export function ChatRoomScreen() {
     const [userId, setUserId] = useState('')
 
     const route = useRoute();
-    console.log(route.params.id)
     // params: route.params
 
     useEffect(() => {

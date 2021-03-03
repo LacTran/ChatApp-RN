@@ -11,7 +11,7 @@ import {
 } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { createMessage } from '../../src/graphql/mutations';
+import { createMessage, updateChatRoom } from '../../src/graphql/mutations';
 import { API, Auth, graphqlOperation } from 'aws-amplify';
 
 export type InputBoxProps = {
@@ -35,9 +35,28 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
         console.warn('Microphone')
     }
 
+    const updateChatRoomLastMessage = async (messageId: string) => {
+        try {
+            await API.graphql(
+                graphqlOperation(
+                    updateChatRoom,
+                    {
+                        input: {
+                            id: chatRoomId,
+                            lastMessageId: messageId
+                        }
+                    }
+                )
+            )
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     const onSendPress = async () => {
         try {
-            const res = await API.graphql(
+            // creating new message
+            const newMessageData = await API.graphql(
                 graphqlOperation(
                     createMessage,
                     {
@@ -49,7 +68,10 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
                     }
                 )
             )
-            console.log(res)
+
+            // updating last message
+            updateChatRoomLastMessage(newMessageData.data.createMessage.id)
+
         } catch (err) {
             console.log(err)
         }
