@@ -71,7 +71,8 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
 
             // updating last message
             updateChatRoomLastMessage(newMessageData.data.createMessage.id)
-
+            
+            setMessage('')
         } catch (err) {
             console.log(err)
         }

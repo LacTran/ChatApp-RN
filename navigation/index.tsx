@@ -13,6 +13,9 @@ import { Octicons, MaterialCommunityIcons, MaterialIcons, FontAwesome5 } from '@
 import { ChatRoomScreen } from '../screens/ChatRoomScreen';
 import ContactsScreen from '../screens/ContactsScreen';
 
+import { Auth } from 'aws-amplify';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -30,6 +33,15 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+
+  const signOut = async () => {
+    try {
+      await Auth.signOut({ global: true });
+    } catch (error) {
+      console.log('error signing out: ', error);
+    }
+  }
+
   return (
     <Stack.Navigator screenOptions={{
       headerStyle: styles.headerStyle,
@@ -47,7 +59,11 @@ function RootNavigator() {
           headerRight: () => (
             <View style={styles.headerIconsStyle}>
               <Octicons name="search" size={22} color={color.light.background} />
-              <MaterialCommunityIcons name="dots-vertical" size={22} color={color.light.background} />
+              <TouchableOpacity
+                onPress={signOut}
+              >
+                <MaterialCommunityIcons name="dots-vertical" size={22} color={color.light.background} />
+              </TouchableOpacity>
             </View>
           )
         }}

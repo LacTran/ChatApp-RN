@@ -36,7 +36,9 @@ export function ContactListItem({ user }: ContactListItemProps) {
                 graphqlOperation(
                     createChatRoom,
                     {
-                        input: {}
+                        input: {
+                            lastMessageId: "110338e-109c-4ee2-9178-8e6a02b266ee"
+                        }
                     }
                 )
             )

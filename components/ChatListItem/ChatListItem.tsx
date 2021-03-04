@@ -17,22 +17,24 @@ export function ChatListItem(
     // const { chatRoom } = props
 
     const [otherUser, setOtherUser] = useState(null)
-    
-    const user = chatRoom.chatRoomUsers.items[1].user;
+
+    const user = chatRoom?.chatRoomUsers.items[1].user;
+
+    const navigation = useNavigation();
+
+    console.log(chatRoom)
 
     useEffect(() => {
         const getOtherUsers = async () => {
             const userInfo = await Auth.currentAuthenticatedUser();
-            if (chatRoom.chatRoomUsers.items[0].user.id === userInfo.attributes.sub) {
-                setOtherUser(chatRoom.chatRoomUsers.items[1].user)
+            if (chatRoom?.chatRoomUsers.items[0].user.id === userInfo.attributes.sub) {
+                setOtherUser(chatRoom?.chatRoomUsers.items[1].user)
             } else {
-                setOtherUser(chatRoom.chatRoomUsers.items[0].user)
+                setOtherUser(chatRoom?.chatRoomUsers.items[0].user)
             }
         }
         getOtherUsers();
     })
-
-    const navigation = useNavigation()
 
     const onClick = () => {
         navigation.navigate(
@@ -59,7 +61,10 @@ export function ChatListItem(
                         <Text
                             numberOfLines={1}
                             style={styles.lastMessage}>
-                            {chatRoom.lastMessage ? chatRoom.lastMessage.content : ""}
+                            {chatRoom.lastMessage
+                                ? `${chatRoom.lastMessage.user.name}: ${chatRoom.lastMessage.content}`
+                                : ""
+                            }
                         </Text>
                     </View>
                 </View>

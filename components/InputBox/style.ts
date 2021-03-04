@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 18,
         paddingLeft: 15,
-        paddingRight: 5
+        paddingRight: 5,
+        minHeight: 30
     },
     icons: {
         marginHorizontal: 5

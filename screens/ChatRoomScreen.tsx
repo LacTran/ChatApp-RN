@@ -8,6 +8,9 @@ import BG from '../assets/images/BG.png';
 import { InputBox } from '../components/InputBox/InputBox';
 
 import { messagesByChatRoom } from '../src/graphql/queries';
+
+import { onCreateMessage } from '../src/graphql/subscriptions';
+
 import { API, Auth, graphqlOperation } from 'aws-amplify';
 
 export function ChatRoomScreen() {
@@ -42,6 +45,24 @@ export function ChatRoomScreen() {
         }
         getUserId();
     })
+
+    useEffect(() => {
+        // this returns an observable in this case , no need to await
+        const subscription = API.graphql(
+            graphqlOperation(onCreateMessage)
+        ).subscribe({
+            next: (data) => {
+                const newMessage = data.value.data.onCreateMessage
+                // check if the message belongs to this room
+                if (newMessage.chatRoomId !== route.params.id) {
+                    return;
+                }
+                setMessages([newMessage, ...messages.reverse()])
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }, [])
 
     return (
         <ImageBackground
