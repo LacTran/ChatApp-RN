@@ -22,8 +22,6 @@ export function ChatListItem(
 
     const navigation = useNavigation();
 
-    console.log(chatRoom)
-
     useEffect(() => {
         const getOtherUsers = async () => {
             const userInfo = await Auth.currentAuthenticatedUser();

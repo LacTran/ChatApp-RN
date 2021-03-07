@@ -6,7 +6,7 @@ import { NewMessageButton } from '../components/NewMessageButton/NewMessageButto
 // dummy data
 // import ContactData from '../data/Users';
 
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, container, graphqlOperation } from 'aws-amplify';
 import { listUsers } from '../src/graphql/queries';
 
 export default function ContactsScreen() {
@@ -34,14 +34,14 @@ export default function ContactsScreen() {
   }, [])
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={contacts}
         renderItem={({ item }) =>
           <ContactListItem user={item} />
         }
         keyExtractor={(item) => item.id}
-        style={{ width: '100%' }}
+        style={styles.container}
       />
     </View>
   );
@@ -49,8 +49,6 @@ export default function ContactsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: '100%'
   },
 });

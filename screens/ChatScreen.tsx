@@ -3,7 +3,8 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import { ChatListItem } from '../components/ChatListItem/ChatListItem';
 import { NewMessageButton } from '../components/NewMessageButton/NewMessageButton';
 
-import ChatRoomsData from '../data/ChatRooms';
+// dummy data
+// import ChatRoomsData from '../data/ChatRooms';
 
 import { API, Auth, graphqlOperation } from 'aws-amplify';
 // modified query used for this screen

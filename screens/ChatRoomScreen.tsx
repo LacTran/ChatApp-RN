@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
+import { FlatList, ImageBackground, StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
 import ChatData from '../data/Chats';
@@ -57,12 +57,12 @@ export function ChatRoomScreen() {
                 if (newMessage.chatRoomId !== route.params.id) {
                     return;
                 }
-                setMessages([newMessage, ...messages.reverse()])
+                setMessages([newMessage, ...messages])
             }
         })
 
         return () => subscription.unsubscribe()
-    }, [])
+    }, [messages])
 
     return (
         <ImageBackground
@@ -74,8 +74,12 @@ export function ChatRoomScreen() {
                 renderItem={({ item }) => <ChatMessage userId={userId} message={item} />}
                 inverted
             />
-
-            <InputBox chatRoomId={route.params.id} />
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={80}
+            >
+                <InputBox chatRoomId={route.params.id} />
+            </KeyboardAvoidingView>
         </ImageBackground>
     )
 }
