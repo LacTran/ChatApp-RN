@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { User } from '../../types';
 import styles from './style';
@@ -15,19 +15,50 @@ import {
     createChatRoom
 } from '../../src/graphql/mutations';
 
+import { getUser } from '../../screens/queries';
+
 export type ContactListItemProps = {
     user: User;
 }
 
 export function ContactListItem({ user }: ContactListItemProps) {
 
-    const navigation = useNavigation()
+    const [existedChatRoomId, setExistedChatRoomId] = useState<string>("")
+
+    const navigation = useNavigation();
 
     const onClick = async () => {
         //navigate to chat room with this user
         try {
 
+            const userInfo = await Auth.currentAuthenticatedUser();
             // Check if you already have the chat room with the user
+            const userData = await API.graphql(
+                graphqlOperation(
+                    getUser,
+                    {
+                        id: userInfo.attributes.sub,
+                    }
+                )
+            )
+
+            const chatRoomUserList = userData.data.getUser.chatRoomUser.items;
+            let isChatRoomExisted;
+
+            for (let i in chatRoomUserList) {
+                isChatRoomExisted = chatRoomUserList[i].chatRoom.chatRoomUsers.items.some((u) => u.user.id === user.id)
+
+                // if the chat room existed, navigate to the chatRoom with that user
+                if (isChatRoomExisted) {
+                    return navigation.navigate(
+                        'ChatRoom',
+                        {
+                            id: chatRoomUserList[i].chatRoomId,
+                            name: user.name
+                        }
+                    )
+                }
+            }
 
             // if not
             // 1. Create a new Chat Room
@@ -64,8 +95,6 @@ export function ContactListItem({ user }: ContactListItemProps) {
             )
 
             // 3. Add authenticated user to the chat room
-
-            const userInfo = await Auth.currentAuthenticatedUser();
             await API.graphql(
                 graphqlOperation(
                     createChatRoomUser,
