@@ -9,38 +9,65 @@ import { NewMessageButton } from '../components/NewMessageButton/NewMessageButto
 import { API, Auth, graphqlOperation } from 'aws-amplify';
 // modified query used for this screen
 import { getUser } from './queries';
+import { onCreateMessage, onUpdateChatRoom } from '../src/graphql/subscriptions';
+import { updateChatRoomLastMessage } from '../components/InputBox/InputBox';
 
 export default function ChatScreen() {
 
   const [chatRooms, setChatRooms] = useState([])
 
-  useEffect(() => {
-    const fetchChatRooms = async () => {
-      try {
-        const userInfo = await Auth.currentAuthenticatedUser();
+  const fetchChatRooms = async () => {
+    try {
+      const userInfo = await Auth.currentAuthenticatedUser();
 
-        const userData = await API.graphql(
-          graphqlOperation(
-            getUser,
-            {
-              id: userInfo.attributes.sub,
-            }
-          )
+      const userData = await API.graphql(
+        graphqlOperation(
+          getUser,
+          {
+            id: userInfo.attributes.sub,
+          }
         )
-        setChatRooms(userData.data.getUser.chatRoomUser.items)
-      } catch (err) {
-        console.log(err)
-      }
+      )
+      setChatRooms(userData.data.getUser.chatRoomUser.items);
+    } catch (err) {
+      console.log(err)
     }
+  }
+
+  useEffect(() => {
     fetchChatRooms();
+  }, [])
+
+  useEffect(() => {
+    // this returns an observable in this case , no need to await
+    const subscription = API.graphql(
+      graphqlOperation(onCreateMessage)
+    ).subscribe({
+      next: (data) => {
+        const newMessage = data.value.data.onCreateMessage
+        updateChatRoomLastMessage(newMessage.id, newMessage.chatRoomId)
+        fetchChatRooms()
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   return (
     <View style={styles.container}>
       <FlatList
         data={chatRooms}
-        renderItem={({ item }: any) =>
-          <ChatListItem chatRoom={item.chatRoom} />
+        renderItem={({ item }: any) => {
+          return (
+            <View>
+              {
+                item.chatRoom.lastMessage ?
+                  <ChatListItem chatRoom={item.chatRoom} />
+                  : null
+              }
+            </View>
+          )
+        }
         }
         keyExtractor={(item) => item.id}
         style={{ width: '100%' }}

@@ -18,6 +18,25 @@ export type InputBoxProps = {
     chatRoomId: string
 }
 
+
+export const updateChatRoomLastMessage = async (messageId: string, chatRoomId: string) => {
+    try {
+        await API.graphql(
+            graphqlOperation(
+                updateChatRoom,
+                {
+                    input: {
+                        id: chatRoomId,
+                        lastMessageId: messageId
+                    }
+                }
+            )
+        )
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 export function InputBox({ chatRoomId }: InputBoxProps) {
 
     const [message, setMessage] = useState<string>('');
@@ -35,23 +54,6 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
         console.warn('Microphone')
     }
 
-    const updateChatRoomLastMessage = async (messageId: string) => {
-        try {
-            await API.graphql(
-                graphqlOperation(
-                    updateChatRoom,
-                    {
-                        input: {
-                            id: chatRoomId,
-                            lastMessageId: messageId
-                        }
-                    }
-                )
-            )
-        } catch (err) {
-            console.log(err)
-        }
-    }
 
     const onSendPress = async () => {
         try {
@@ -70,8 +72,8 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
             )
 
             // updating last message
-            updateChatRoomLastMessage(newMessageData.data.createMessage.id)
-            
+            updateChatRoomLastMessage(newMessageData.data.createMessage.id, chatRoomId)
+
             setMessage('')
         } catch (err) {
             console.log(err)

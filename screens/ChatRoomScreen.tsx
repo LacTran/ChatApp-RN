@@ -5,7 +5,7 @@ import { useRoute } from '@react-navigation/native';
 import ChatData from '../data/Chats';
 import { ChatMessage } from '../components/ChatMessage/ChatMessage';
 import BG from '../assets/images/BG.png';
-import { InputBox } from '../components/InputBox/InputBox';
+import { InputBox, updateChatRoomLastMessage } from '../components/InputBox/InputBox';
 
 import { messagesByChatRoom } from '../src/graphql/queries';
 
@@ -57,6 +57,7 @@ export function ChatRoomScreen() {
                 if (newMessage.chatRoomId !== route.params.id) {
                     return;
                 }
+                updateChatRoomLastMessage(newMessage.id, newMessage.chatRoomId)
                 setMessages([newMessage, ...messages])
             }
         })
