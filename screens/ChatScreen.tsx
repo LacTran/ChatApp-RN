@@ -9,8 +9,12 @@ import { NewMessageButton } from '../components/NewMessageButton/NewMessageButto
 import { API, Auth, graphqlOperation } from 'aws-amplify';
 // modified query used for this screen
 import { getUser } from './queries';
-import { onCreateMessage, onUpdateChatRoom } from '../src/graphql/subscriptions';
+import { onCreateMessage } from '../src/graphql/subscriptions';
 import { updateChatRoomLastMessage } from '../components/InputBox/InputBox';
+
+const sortChatRooms = (chatRoomArr) => {
+  return chatRoomArr.sort((a, b) => Date.parse(b.chatRoom.lastMessage.createdAt) - Date.parse(a.chatRoom.lastMessage.createdAt))
+}
 
 export default function ChatScreen() {
 
@@ -28,7 +32,9 @@ export default function ChatScreen() {
           }
         )
       )
-      setChatRooms(userData.data.getUser.chatRoomUser.items);
+      let sortedChatRooms = sortChatRooms(userData.data.getUser.chatRoomUser.items)
+      setChatRooms(sortedChatRooms)
+      // setChatRooms(userData.data.getUser.chatRoomUser.items);
     } catch (err) {
       console.log(err)
     }

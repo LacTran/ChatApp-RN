@@ -18,8 +18,6 @@ export function ChatListItem(
 
     const [otherUser, setOtherUser] = useState(null)
 
-    const user = chatRoom?.chatRoomUsers.items[1].user;
-
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -67,7 +65,7 @@ export function ChatListItem(
                     </View>
                 </View>
 
-                <Text style={styles.time}>{chatRoom.lastMessage && moment(chatRoom.lastMessage.createdAt).format("DD/MM/YYYY")}</Text>
+                <Text style={styles.time}>{chatRoom.lastMessage && moment(chatRoom.lastMessage.createdAt).fromNow()}</Text>
                 {/* <Text style={styles.lastMessage}>Yesterday</Text> */}
             </View >
         </TouchableOpacity>
