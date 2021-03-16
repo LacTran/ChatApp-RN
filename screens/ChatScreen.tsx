@@ -41,7 +41,12 @@ export default function ChatScreen() {
   }
 
   useEffect(() => {
-    fetchChatRooms();
+    const timeout = setInterval(() => {
+      fetchChatRooms()
+    }, 60000)
+    return () => {
+      clearInterval(timeout)
+    };
   }, [])
 
   useEffect(() => {
