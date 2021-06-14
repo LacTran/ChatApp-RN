@@ -18,7 +18,7 @@ const sortChatRooms = (chatRoomArr) => {
 
 export default function ChatScreen() {
 
-  const [chatRooms, setChatRooms] = useState([])
+  const [chatRooms, setChatRooms] = useState([]);
 
   const fetchChatRooms = async () => {
     try {

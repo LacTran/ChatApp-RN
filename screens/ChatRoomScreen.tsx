@@ -16,6 +16,7 @@ import { API, Auth, graphqlOperation } from 'aws-amplify';
 export function ChatRoomScreen() {
 
     const [messages, setMessages] = useState([])
+    console.log(messages)
 
     const [userId, setUserId] = useState('')
 

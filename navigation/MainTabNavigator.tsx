@@ -10,6 +10,7 @@ import { View } from 'react-native'
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import ChatScreen from '../screens/ChatScreen';
+import { CameraScreen } from '../screens/CameraScreen'
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { MainTabParamList, TabOneParamList, TabTwoParamList } from '../types';
 
@@ -27,8 +28,8 @@ export default function MainTabNavigator() {
           backgroundColor: Colors[colorScheme].tint
         },
         indicatorStyle: {
-          backgroundColor: Colors[colorScheme].background,
-          height: 4
+          backgroundColor: colorScheme === 'dark' ? Colors.light.tint : Colors.light.background ,
+          height: 3
         },
         labelStyle: {
           fontWeight: 'bold',
@@ -37,14 +38,6 @@ export default function MainTabNavigator() {
         },
         showIcon: true,
       }}>
-      <MainTab.Screen
-        name="Camera"
-        component={ChatScreen}
-        options={{
-          tabBarIcon: ({ color }) => <Fontisto name="camera" color={color} size={18} />,
-          tabBarLabel: () => null,
-        }}
-      />
       <MainTab.Screen
         name="Chats"
         component={ChatScreen}

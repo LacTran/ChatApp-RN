@@ -15,6 +15,7 @@ import ContactsScreen from '../screens/ContactsScreen';
 
 import { Auth } from 'aws-amplify';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { CameraScreen } from '../screens/CameraScreen';
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
@@ -86,6 +87,13 @@ function RootNavigator() {
             </View>
           )
         })}
+      />
+      <Stack.Screen
+        name="Camera"
+        component={CameraScreen}
+        options={{
+          headerShown: false
+        }}
       />
     </Stack.Navigator>
   );

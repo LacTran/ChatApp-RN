@@ -13,6 +13,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { createMessage, updateChatRoom } from '../../src/graphql/mutations';
 import { API, Auth, graphqlOperation } from 'aws-amplify';
+import { useNavigation } from '@react-navigation/native';
 
 export type InputBoxProps = {
     chatRoomId: string
@@ -42,6 +43,8 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
     const [message, setMessage] = useState<string>('');
     const [currentUserId, setCurrentUserId] = useState('');
 
+    const navigation = useNavigation();
+
     useEffect(() => {
         const fetchUser = async () => {
             const userInfo = await Auth.currentAuthenticatedUser();
@@ -65,7 +68,8 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
                         input: {
                             content: message,
                             userId: currentUserId,
-                            chatRoomId
+                            chatRoomId,
+                            type: "text"
                         }
                     }
                 )
@@ -101,7 +105,13 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
                     onChangeText={setMessage}
                 />
                 <Entypo name="attachment" size={24} color="grey" style={styles.icons} />
-                {!message && <Fontisto name="camera" size={24} color="grey" style={styles.icons} />}
+                {!message &&
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('Camera')
+                    }}>
+                        <Fontisto name="camera" size={24} color="grey" style={styles.icons} />
+                    </TouchableOpacity>
+                }
             </View>
             <TouchableOpacity onPress={handleMainButton}>
                 <View style={styles.buttonContainer}>

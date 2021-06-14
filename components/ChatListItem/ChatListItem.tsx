@@ -5,6 +5,8 @@ import styles from './style';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { Auth } from 'aws-amplify';
+import useColorScheme from '../../hooks/useColorScheme';
+import Colors from '../../constants/Colors';
 
 export type ChatListItemProps = {
     chatRoom: ChatRoom;
@@ -15,6 +17,8 @@ export function ChatListItem(
     { chatRoom }: any
 ) {
     // const { chatRoom } = props
+
+    const colorScheme = useColorScheme();
 
     const [otherUser, setOtherUser] = useState(null)
 
@@ -53,7 +57,7 @@ export function ChatListItem(
                     <Image source={{ uri: otherUser.imageUri }} style={styles.avatar} />
 
                     <View style={styles.midContainer}>
-                        <Text style={styles.username}>{otherUser.name}</Text>
+                        <Text style={[styles.username, { color: Colors[colorScheme].text }]}>{otherUser.name}</Text>
                         <Text
                             numberOfLines={1}
                             style={styles.lastMessage}>
