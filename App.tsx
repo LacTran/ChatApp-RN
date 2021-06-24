@@ -17,6 +17,10 @@ import Navigation from './navigation';
 
 import { withAuthenticator } from 'aws-amplify-react-native';
 
+// contexts
+import { UserContextProvider } from './context/userContext';
+import { MessageContextProvider } from './context/messageContext';
+
 const randomImages = [
   'https://hieumobile.com/wp-content/uploads/avatar-among-us-2.jpg',
   'https://hieumobile.com/wp-content/uploads/avatar-among-us-3.jpg',
@@ -75,10 +79,14 @@ function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
-        <StatusBar />
-      </SafeAreaProvider>
+      <MessageContextProvider>
+        <UserContextProvider>
+          <SafeAreaProvider>
+            <Navigation colorScheme={colorScheme} />
+            <StatusBar />
+          </SafeAreaProvider>
+        </UserContextProvider>
+      </MessageContextProvider>
     );
   }
 }

@@ -112,6 +112,7 @@ export const createChatRoomUser = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         createdAt
@@ -157,6 +158,7 @@ export const updateChatRoomUser = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         createdAt
@@ -202,6 +204,7 @@ export const deleteChatRoomUser = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         createdAt
@@ -236,6 +239,7 @@ export const createChatRoom = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         nextToken
@@ -247,6 +251,7 @@ export const createChatRoom = /* GraphQL */ `
         content
         userId
         chatRoomId
+        type
         user {
           id
           name
@@ -292,6 +297,7 @@ export const updateChatRoom = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         nextToken
@@ -303,6 +309,7 @@ export const updateChatRoom = /* GraphQL */ `
         content
         userId
         chatRoomId
+        type
         user {
           id
           name
@@ -348,6 +355,7 @@ export const deleteChatRoom = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         nextToken
@@ -359,6 +367,7 @@ export const deleteChatRoom = /* GraphQL */ `
         content
         userId
         chatRoomId
+        type
         user {
           id
           name
@@ -391,6 +400,7 @@ export const createMessage = /* GraphQL */ `
       content
       userId
       chatRoomId
+      type
       user {
         id
         name
@@ -417,6 +427,7 @@ export const createMessage = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         createdAt
@@ -437,6 +448,7 @@ export const updateMessage = /* GraphQL */ `
       content
       userId
       chatRoomId
+      type
       user {
         id
         name
@@ -463,6 +475,7 @@ export const updateMessage = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         createdAt
@@ -483,6 +496,7 @@ export const deleteMessage = /* GraphQL */ `
       content
       userId
       chatRoomId
+      type
       user {
         id
         name
@@ -509,6 +523,7 @@ export const deleteMessage = /* GraphQL */ `
           content
           userId
           chatRoomId
+          type
           updatedAt
         }
         createdAt

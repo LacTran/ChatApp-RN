@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, ImageBackground, StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+    FlatList,
+    ImageBackground,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+} from 'react-native';
 
 import { useRoute } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native'
 import ChatData from '../data/Chats';
 import { ChatMessage } from '../components/ChatMessage/ChatMessage';
 import BG from '../assets/images/BG.png';
@@ -11,17 +18,22 @@ import { messagesByChatRoom } from '../src/graphql/queries';
 
 import { onCreateMessage } from '../src/graphql/subscriptions';
 
-import { API, Auth, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation } from 'aws-amplify';
 
+import { useUser } from '../context/userContext';
+import { useMessage } from '../context/messageContext';
 export function ChatRoomScreen() {
 
-    const [messages, setMessages] = useState([])
-    console.log(messages)
-
-    const [userId, setUserId] = useState('')
+    // const [messages, setMessages] = useState([])
 
     const route = useRoute();
     // params: route.params
+
+    const isFocused = useIsFocused();
+
+    const { userId } = useUser()
+
+    const { messages, setMessages } = useMessage()
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -30,22 +42,14 @@ export function ChatRoomScreen() {
                     messagesByChatRoom,
                     {
                         chatRoomId: route.params.id,
-                        sortDirection: "DESC"
-                    }
+                        sortDirection: "DESC",
+                    },
                 )
             )
             setMessages(messagesData.data.messagesByChatRoom.items)
         }
         fetchMessages()
     }, [])
-
-    useEffect(() => {
-        const getUserId = async () => {
-            const userInfo = await Auth.currentAuthenticatedUser();
-            setUserId(userInfo.attributes.sub)
-        }
-        getUserId();
-    })
 
     useEffect(() => {
         // this returns an observable in this case , no need to await
@@ -73,7 +77,9 @@ export function ChatRoomScreen() {
         >
             <FlatList
                 data={messages}
-                renderItem={({ item }) => <ChatMessage userId={userId} message={item} />}
+                renderItem={({ item }) => {
+                    return <ChatMessage userId={userId} message={item} />
+                }}
                 inverted
             />
             <KeyboardAvoidingView
@@ -90,5 +96,5 @@ const styles = StyleSheet.create({
     backgroundStyle: {
         width: '100%',
         height: '100%'
-    }
+    },
 })

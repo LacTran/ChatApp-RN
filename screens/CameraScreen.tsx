@@ -4,22 +4,52 @@ import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native'
 import Colors from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import { API, graphqlOperation } from 'aws-amplify';
+import { createMessage } from '../src/graphql/mutations';
+import { updateChatRoomLastMessage } from '../components/InputBox/InputBox';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { useUser } from '../context/userContext';
+import { useMessage } from '../context/messageContext';
 
+
+export interface SelectedMedia {
+    uri: string,
+    base64?: string | undefined,
+    width: number | null,
+    height: number | null,
+    exif?: any
+    type?: string
+}
 
 export const CameraScreen = () => {
+
+    const { userId } = useUser()
+
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
     const [type, setType] = useState(Camera.Constants.Type.back);
     const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
 
-    const [pictureData, setPictureData] = useState<string | undefined>('')
+    let defaultSelectedMedia = {
+        uri: '',
+        base64: '',
+        height: null,
+        width: null,
+        exif: null
+    }
+
+    const [selectedMedia, setSelectedMedia] = useState<SelectedMedia>(defaultSelectedMedia)
 
     const navigation = useNavigation();
+
+    const route = useRoute();
 
     const camera = useRef<Camera | null>()
 
     const isFocused = useIsFocused();
+
+    const { messages, setMessages,setChatRoomId } = useMessage();
 
     const requestCameraPermission = async () => {
         const { status } = await Camera.requestPermissionsAsync();
@@ -32,7 +62,10 @@ export const CameraScreen = () => {
                 const options = { quality: 1, base64: true, skipProcessing: false }
 
                 const picture = await camera.current.takePictureAsync(options);
-                setPictureData(picture.base64)
+                setSelectedMedia({
+                    ...picture,
+                    type: 'image'
+                })
             } catch (err) {
 
             }
@@ -41,9 +74,22 @@ export const CameraScreen = () => {
 
     useEffect(() => {
         if (isFocused && !hasCameraPermission) {
+            setChatRoomId(route.params.chatRoomId)
             requestCameraPermission();
         }
     });
+
+    const resizeImage = (height: number, width: number) => {
+        if (height > width) {
+            let newHeight = width;
+            let newWidth = width / height * width
+            return { newHeight, newWidth }
+        } else if (width > height) {
+            let newWidth = height;
+            let newHeight = height / width * height;
+            return { newHeight, newWidth };
+        }
+    }
 
 
     const onOpenGallery = async () => {
@@ -73,7 +119,58 @@ export const CameraScreen = () => {
 
 
         if (!result.cancelled) {
-            setPictureData(result.base64);
+            setSelectedMedia(result)
+        }
+    }
+
+    const compressImage = async (uri: string, format = ImageManipulator.SaveFormat.JPEG, imageHeight: number, imageWidth: number) => {
+        const result = await ImageManipulator.manipulateAsync(
+            uri,
+            [{
+                resize: {
+                    height: resizeImage(imageHeight, imageWidth)?.newHeight,
+                    width: resizeImage(imageHeight, imageWidth)?.newWidth
+                }
+            }],
+            { compress: 0, format, base64: true },
+        );
+        return result;
+        // return { type, width, height, uri,base64 }
+    };
+
+
+    const handleSendMedia = async () => {
+        try {
+            let res = await compressImage(
+                selectedMedia?.uri,
+                ImageManipulator.SaveFormat.JPEG,
+                selectedMedia?.height ?? 0,
+                selectedMedia?.width ?? 0
+            )
+            // creating new message
+            const newMessageData = await API.graphql(
+                graphqlOperation(
+                    createMessage,
+                    {
+                        input: {
+                            content: res.base64,
+                            userId: userId,
+                            chatRoomId: route.params.chatRoomId,
+                            type: selectedMedia.type
+                        }
+                    }
+                )
+            )
+
+            // updating last message
+            updateChatRoomLastMessage(newMessageData.data.createMessage.id, route.params.chatRoomId)
+            setSelectedMedia(defaultSelectedMedia);
+
+            // navigation.goBack();
+
+
+        } catch (err) {
+            console.log(err)
         }
     }
 
@@ -95,11 +192,11 @@ export const CameraScreen = () => {
         )
     }
 
-    if (pictureData) {
+    if (selectedMedia?.base64) {
         return (
             <View style={[styles.container, { backgroundColor: '#000' }]}>
                 <Image
-                    source={{ uri: `data:image/gif;base64,${pictureData}` }}
+                    source={{ uri: `data:image/gif;base64,${selectedMedia.base64}` }}
                     style={styles.imagePreview}
                     resizeMode="cover"
                 >
@@ -108,15 +205,14 @@ export const CameraScreen = () => {
                     <TouchableOpacity
                         style={[styles.sideButton]}
                         onPress={() => {
-                            setPictureData('')
+                            setSelectedMedia(defaultSelectedMedia)
                         }}
                     >
                         <Ionicons name="md-close" size={35} color="#cdd0cb" />
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.sideButton]}
-                        onPress={() => {
-                        }}
+                        onPress={handleSendMedia}
                     >
                         <Ionicons name="md-send" size={35} color="#cdd0cb" />
                     </TouchableOpacity>

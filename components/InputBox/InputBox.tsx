@@ -12,8 +12,9 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { createMessage, updateChatRoom } from '../../src/graphql/mutations';
-import { API, Auth, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation } from 'aws-amplify';
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from '../../context/userContext';
 
 export type InputBoxProps = {
     chatRoomId: string
@@ -41,17 +42,10 @@ export const updateChatRoomLastMessage = async (messageId: string, chatRoomId: s
 export function InputBox({ chatRoomId }: InputBoxProps) {
 
     const [message, setMessage] = useState<string>('');
-    const [currentUserId, setCurrentUserId] = useState('');
+    const { userId } = useUser()
 
     const navigation = useNavigation();
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const userInfo = await Auth.currentAuthenticatedUser();
-            setCurrentUserId(userInfo.attributes.sub)
-        }
-        fetchUser()
-    })
 
     const onMicrophonePress = () => {
         console.warn('Microphone')
@@ -67,7 +61,7 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
                     {
                         input: {
                             content: message,
-                            userId: currentUserId,
+                            userId: userId,
                             chatRoomId,
                             type: "text"
                         }
@@ -107,7 +101,7 @@ export function InputBox({ chatRoomId }: InputBoxProps) {
                 <Entypo name="attachment" size={24} color="grey" style={styles.icons} />
                 {!message &&
                     <TouchableOpacity onPress={() => {
-                        navigation.navigate('Camera')
+                        navigation.navigate('Camera', { chatRoomId })
                     }}>
                         <Fontisto name="camera" size={24} color="grey" style={styles.icons} />
                     </TouchableOpacity>

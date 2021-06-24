@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image } from 'react-native';
 import { MessageType } from '../../types';
 import moment from 'moment';
 import styles from './style';
@@ -26,7 +26,11 @@ export function ChatMessage({ message, userId }: ChatMessageProps) {
                 }
             ]}>
                 {!isMyMessage() && <Text style={styles.name}>{message.user.name}</Text>}
-                <Text style={styles.message}>{message.content}</Text>
+                {
+                    message.type === "text"
+                        ? <Text style={styles.message}>{message.content}</Text>
+                        : <Image style={styles.imageStyle} source={{ uri: `data:image/gif;base64,${message.content}` }} />
+                }
                 <Text style={styles.time}>{moment(message.createdAt).fromNow()}</Text>
             </View>
         </View >
